@@ -22,6 +22,7 @@ import { hashHistory /*, browserHistory*/ } from "react-router";
 import * as UserActions from "./actions/userActions";
 import UserStore from "./stores/userStore";
 
+import "@ungap/custom-elements-builtin";
 require("core-js/shim");
 
 window.jQuery = $; // Bootstrap won't work without this hack. browserify-shim didn't help either

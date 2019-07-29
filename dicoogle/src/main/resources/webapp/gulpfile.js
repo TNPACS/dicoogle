@@ -11,7 +11,6 @@ var rm = require("gulp-rm");
 var sass = require("gulp-sass");
 var source = require("vinyl-source-stream");
 var sourcemaps = require("gulp-sourcemaps");
-var uglify = require("gulp-uglify");
 var watchify = require("watchify");
 
 require("core-js/fn/object/assign");
@@ -35,35 +34,35 @@ function createBrowserify(debug, watch) {
     cache: {},
     packageCache: {},
     extensions: [".jsx"],
-    debug: debug,
-    transform: [
-      [
-        "babelify",
-        {
-          presets: ["es2015", "react"]
-        }
-      ],
-      [
-        "envify",
-        {
-          _: "purge",
-          global: true,
-          NODE_ENV: debug ? "development" : "production"
-        }
-      ]
-    ]
+    debug: debug
+  }).transform("envify", {
+    _: "purge",
+    global: true,
+    NODE_ENV: debug ? "development" : "production"
   });
+
+  if (debug) {
+    b.transform("babelify", {
+      presets: ["@babel/preset-env", "@babel/preset-react"]
+    });
+  } else {
+    b.transform("babelify", {
+      presets: ["@babel/preset-env", "@babel/preset-react", "minify"]
+    });
+  }
   if (watch) {
     b.plugin(watchify);
   }
   return b.require(EXTERNAL_REQUIRES);
 }
 
-gulp.task("production-env", function() {
+function productionEnv(cb) {
   process.env.NODE_ENV = "production";
-});
+  cb();
+}
+exports["production-env"] = productionEnv;
 
-gulp.task("lint", function() {
+function lint() {
   return gulp
     .src(["js/**/*.js", "js/**/*.jsx"])
     .pipe(
@@ -73,32 +72,24 @@ gulp.task("lint", function() {
     )
     .pipe(eslint.format())
     .pipe(eslint.failAfterError());
-});
+}
+exports.lint = lint;
 
 function handleBundlingError(e) {
   gutil.log("" + e);
 }
 
-gulp.task("js", ["lint"], function() {
+function js() {
   return createBrowserify(false, false)
     .bundle()
     .on("error", handleBundlingError)
     .pipe(source("bundle.min.js"))
     .pipe(buffer())
-    .pipe(
-      uglify({
-        compress: {
-          dead_code: true,
-          drop_console: true,
-          warnings: false
-        },
-        mangle: true
-      })
-    )
     .pipe(gulp.dest("lib"));
-});
+}
+exports.js = js;
 
-gulp.task("js-debug", ["lint"], function() {
+function jsDebug() {
   return createBrowserify(true, false)
     .bundle()
     .on("error", handleBundlingError)
@@ -107,9 +98,10 @@ gulp.task("js-debug", ["lint"], function() {
     .pipe(sourcemaps.init({ loadMaps: true }))
     .pipe(sourcemaps.write("./"))
     .pipe(gulp.dest("lib"));
-});
+}
+exports["js-debug"] = jsDebug;
 
-gulp.task("js:watch", function() {
+function jsWatch() {
   var b = createBrowserify(true, true);
   b.on("update", bundle); // on any dep update, runs the bundler
   b.on("log", gutil.log); // output build logs to terminal
@@ -128,9 +120,10 @@ gulp.task("js:watch", function() {
     );
   }
   bundle();
-});
+}
+exports["js:watch"] = jsWatch;
 
-gulp.task("html", function() {
+function html() {
   // use processhtml
   return gulp
     .src("index-template.html")
@@ -142,9 +135,10 @@ gulp.task("html", function() {
     )
     .pipe(rename("index.html"))
     .pipe(gulp.dest("."));
-});
+}
+exports.html = html;
 
-gulp.task("html-debug", function() {
+function htmlDebug() {
   // use processhtml
   return gulp
     .src("index-template.html")
@@ -155,17 +149,19 @@ gulp.task("html-debug", function() {
     )
     .pipe(rename("index.html"))
     .pipe(gulp.dest("."));
-});
+}
+exports["html-debug"] = htmlDebug;
 
-gulp.task("css", function() {
+function css() {
   // use sass
   return gulp
     .src("sass/dicoogle.scss")
     .pipe(sass({ outputStyle: "compressed" }).on("error", sass.logError))
     .pipe(gulp.dest("css"));
-});
+}
+exports.css = css;
 
-gulp.task("css-debug", function() {
+function cssDebug() {
   // use sass
   return gulp
     .src("sass/dicoogle.scss")
@@ -173,19 +169,29 @@ gulp.task("css-debug", function() {
     .pipe(sass().on("error", sass.logError))
     .pipe(sourcemaps.write())
     .pipe(gulp.dest("css"));
-});
+}
+exports["css-debug"] = cssDebug;
 
-gulp.task("css:watch", function() {
+function cssWatch() {
   gulp.watch("sass/**/*.scss", ["css-debug"]);
-});
+}
+exports["css:watch"] = cssWatch;
 
-gulp.task("production", ["production-env", "js", "html", "css"]);
-gulp.task("development", ["js-debug", "html-debug", "css-debug"]);
+exports.production = gulp.series(
+  productionEnv,
+  gulp.parallel(gulp.series(lint, js), html, css)
+);
+exports.development = gulp.parallel(
+  gulp.series(lint, jsDebug),
+  htmlDebug,
+  cssDebug
+);
 
-gulp.task("clean", function() {
+function clean() {
   return gulp
     .src(["lib/bundle.*", "css/dicoogle.css*", "index.html"], { read: false })
     .pipe(rm());
-});
+}
+exports.clean = clean;
 
-gulp.task("default", ["production"]);
+exports.default = gulp.task("production");

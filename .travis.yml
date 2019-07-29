@@ -14,17 +14,15 @@ matrix:
     - jdk: oraclejdk8
       env: NODE_VERSION=lts/boron WEBAPP_ONLY=1
     - jdk: oraclejdk8
-      env: NODE_VERSION=lts/carbon WEBAPP_ONLY=1
+      env: NODE_VERSION=stable WEBAPP_ONLY=1
     - jdk: oraclejdk8
-      env: NODE_VERSION=lts/dubnium
+      env: NODE_VERSION=lts/*
     - jdk: openjdk8
       env: NODE_VERSION=lts/dubnium
     - jdk: openjdk10
       env: NODE_VERSION=lts/dubnium
     - jdk: openjdk11
-      env: NODE_VERSION=lts/dubnium
-  allow_failures:
-    - jdk: openjdk11
+      env: NODE_VERSION=lts/*
 
 addons:
   apt:
