@@ -89,6 +89,7 @@
     "watchify": "^3.11.1"
   },
   "scripts": {
+    "preinstall": "cd ../../../../../webcore && npm install",
     "prepare": "gulp production",
     "build": "gulp production",
     "js": "gulp js",
