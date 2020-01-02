@@ -2,7 +2,7 @@
 
 ## Building
 
-`npm` version 4 or earlier is required. To build everything for production (ready to be bundled for when creating dicoogle.jar):
+The web application is built using Node.js and npm (see [package.json](package.json)). To build everything for production (ready to be bundled for when creating dicoogle.jar):
 
     npm install
 
@@ -23,11 +23,11 @@ To watch for changes in the SASS resources (thus building css):
 
     npm run css:watch
 
-Everything is build for production (js, html and css) in the prepublish script (this is also run automatically for `npm install`):
+Everything is built for production (js, html and css) in the prepare script (which is also run automatically for `npm install`):
 
-    npm run-script prepublish
+    npm run prepare
 
-All of these npm scripts map directly to gulp tasks:
+All of these npm scripts map directly to [Gulp](https://gulpjs.com) tasks:
 
 ```bash
 $ gulp --tasks
@@ -58,9 +58,14 @@ $ gulp --tasks
 
 ## Running as a standalone server
 
-We have included a script for running a static server containing the standalone webapp. If you already have Python installed, simply execute:
+We have included a script for running a static server containing the standalone webapp.
+If you already have Python installed, execute:
 
-    ./run_server
+```sh
+./run_server
+```
+
+But other static HTTP servers may be used as well.
 
 ## Debugging the webapp
 
