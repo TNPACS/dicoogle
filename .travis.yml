@@ -52,7 +52,7 @@ before_install:
 install: true
 
 script:
-  - cd dicoogle/src/main/resources/webapp && npm install 
+  - cd dicoogle/src/main/resources/webapp && npm install && npm run build
   - if [ -z "$WEBAPP_ONLY" ]; then
       cd ../../../../.. && mvn install -Dskip.installnodenpm -Dskip.npm -Dmaven.javadoc.skip=true -B -V;
     fi
