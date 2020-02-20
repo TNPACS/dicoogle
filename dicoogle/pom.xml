@@ -84,7 +84,7 @@
                     <include>webapp/bootstrap/fonts/*</include>
                     <include>webapp/fonts/**</include>
                     <include>webapp/css/**</include>
-                    <include>webapp/lib/**</include>
+                    <include>webapp/dist/**</include>
                     <include>webapp/index.html</include>
                 </includes>
                 <excludes>

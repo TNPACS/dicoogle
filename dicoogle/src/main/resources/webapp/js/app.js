@@ -1,3 +1,4 @@
+import "../sass/dicoogle.scss";
 import $ from "jquery";
 import React, { PropTypes } from "react";
 import ReactDOM from "react-dom";
