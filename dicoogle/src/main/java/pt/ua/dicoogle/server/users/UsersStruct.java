@@ -71,11 +71,7 @@ public class UsersStruct {
         String username = "dicoogle";
         boolean admin = true;
         String passPlainText = "dicoogle";
-
-        String passHash = HashService.getSHA1Hash(passPlainText);             //password Hash
-        String hash = HashService.getSHA1Hash(username + admin + passHash);   //user Hash
-
-        return Collections.singleton(new User(username, hash, admin));
+        return Collections.singleton(User.create(username, admin, passPlainText));
     }
 
     /**

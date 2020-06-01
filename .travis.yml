@@ -4,6 +4,7 @@ sudo: true
 
 before_cache:
  - rm -rf $HOME/.m2/repository/pt/ua/ieeta/dicoogle*
+ - rm -rf $HOME/.cache/JNA/temp/
 
 cache:
   directories:
@@ -12,27 +13,17 @@ cache:
 matrix:
   include:
     - jdk: oraclejdk8
-      env: NODE_VERSION=lts/boron WEBAPP_ONLY=1
+      env: NODE_VERSION=10 WEBAPP_ONLY=1
     - jdk: oraclejdk8
-      env: NODE_VERSION=lts/carbon WEBAPP_ONLY=1
+      env: NODE_VERSION=stable WEBAPP_ONLY=1
     - jdk: oraclejdk8
-      env: NODE_VERSION=lts/dubnium
+      env: NODE_VERSION=lts/*
     - jdk: openjdk8
-      env: NODE_VERSION=lts/dubnium
+      env: NODE_VERSION=lts/*
     - jdk: openjdk10
-      env: NODE_VERSION=lts/dubnium
+      env: NODE_VERSION=lts/*
     - jdk: openjdk11
-      env: NODE_VERSION=lts/dubnium
-  allow_failures:
-    - jdk: openjdk11
-
-addons:
-  apt:
-    sources:
-      - ubuntu-toolchain-r-test
-    packages:
-      - gcc-4.8
-      - g++-4.8
+      env: NODE_VERSION=lts/*
 
 before_install:
   - if [ $TRAVIS_JDK_VERSION == "oraclejdk8" ] || [ $TRAVIS_JDK_VERSION == "openjdk8" ]; then
@@ -40,19 +31,11 @@ before_install:
       sudo keytool -importcert -trustcacerts -alias lets-encrypt-x3-cross-signed -file lets-encrypt-x3-cross-signed.der -storepass changeit -keystore $JAVA_HOME/jre/lib/security/cacerts;
     fi
   - nvm install $NODE_VERSION
-  - if [ $TRAVIS_OS_NAME == "linux" ]; then
-      export CC="gcc-4.8";
-      export CXX="g++-4.8";
-      export LINK="gcc-4.8";
-      export LINKXX="g++-4.8";
-    fi
-  - gcc --version
-  - g++ --version
 
 install: true
 
 script:
-  - cd dicoogle/src/main/resources/webapp && npm install 
+  - cd dicoogle/src/main/resources/webapp && npm install && npm run build
   - if [ -z "$WEBAPP_ONLY" ]; then
       cd ../../../../.. && mvn install -Dskip.installnodenpm -Dskip.npm -Dmaven.javadoc.skip=true -B -V;
     fi
