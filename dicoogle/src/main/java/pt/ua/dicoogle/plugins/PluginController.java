@@ -24,6 +24,7 @@ import org.restlet.resource.ServerResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.ua.dicoogle.core.settings.ServerSettingsManager;
+import pt.ua.dicoogle.plugins.tnpacs.TNPStoragePluginSet;
 import pt.ua.dicoogle.plugins.webui.WebUIPlugin;
 import pt.ua.dicoogle.plugins.webui.WebUIPluginManager;
 import pt.ua.dicoogle.sdk.*;
@@ -108,12 +109,12 @@ public class PluginController{
         this.webUI = new WebUIPluginManager();
         this.loadWebUIPlugins();
 
+        pluginSets.add(new TNPStoragePluginSet());
+        logger.info("Added TNPACS storage plugin");
+
         logger.info("Loaded Local Plugins");
 
         this.configurePlugins();
-
-        pluginSets.add(new DefaultFileStoragePlugin());
-        logger.info("Added default storage plugin");
         
         this.proxy = new DicooglePlatformProxy(this);
         this.preparer = new PluginPreparer(this.proxy);
@@ -533,7 +534,7 @@ public class PluginController{
 
     public JointQueryTask queryAll(JointQueryTask holder, final String query, final Object ... parameters)
     {
-        return queryAll(holder, query, parameters);
+        return queryAll(holder, query, DimLevel.INSTANCE, parameters);
     }
 
     public JointQueryTask queryAll(JointQueryTask holder, final String query, final DimLevel level, final Object ... parameters)
