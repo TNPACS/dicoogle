@@ -184,7 +184,7 @@ public class TNPStoragePlugin extends PluginBase implements StorageInterface {
         return String.format("%s.dcm", sopInstanceUid);
     }
 
-    private class TNPIterable implements Iterable<StorageInputStream> {
+    private static class TNPIterable implements Iterable<StorageInputStream> {
         private final URI location;
 
         TNPIterable(URI location) {
